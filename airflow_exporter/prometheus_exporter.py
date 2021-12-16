@@ -24,6 +24,35 @@ from prometheus_client.samples import Sample
 import itertools
 
 @dataclass
+class DagInfo:
+    dag_id: str
+    is_paused: str
+    owner: str
+
+def get_dag_info() -> List[DagInfo]:
+    '''get dag info
+    :return dag_info
+    '''
+    assert(Session is not None)
+
+    sql_res = (
+        Session.query( # pylint: disable=no-member
+            DagModel.dag_id, DagModel.is_paused, DagModel.owners,
+        ).all()
+    )
+
+    res = [
+        DagInfo(
+            dag_id = i.dag_id,
+            is_paused = str(i.is_paused).lower(),
+            owner = i.owners
+        )
+        for i in sql_res
+    ]
+
+    return res
+
+@dataclass
 class DagStatusInfo:
     dag_id: str
     status: str
@@ -31,8 +60,8 @@ class DagStatusInfo:
     owner: str
 
 def get_dag_status_info() -> List[DagStatusInfo]:
-    '''get dag info
-    :return dag_info
+    '''get dag status info
+    :return dag_status_info
     '''
     assert(Session is not None)
 
@@ -227,8 +256,33 @@ class MetricsCollector(object):
     def collect(self) -> Generator[Metric, None, None]:
         '''collect metrics'''
 
-        # Dag Metrics and collect all labels
-        dag_info = get_dag_status_info()
+        # Dag list metric
+        dag_info = get_dag_info()
+
+        dag_metric = GaugeMetricFamily(
+            'airflow_dag',
+            'Shows all dags',
+            labels=['dag_id', 'is_paused', 'owner']
+        )
+
+        for dag in dag_info:
+            labels = get_dag_labels(dag.dag_id)
+
+            _add_gauge_metric(
+                dag_metric,
+                {
+                    'dag_id': dag.dag_id,
+                    'is_paused': dag.is_paused,
+                    'owner': dag.owner,
+                    **labels
+                },
+                1,
+            )
+
+        yield dag_metric
+
+        # Dag Status Metrics and collect all labels
+        dag_status_info = get_dag_status_info()
 
         dag_status_metric = GaugeMetricFamily(
             'airflow_dag_status',
@@ -236,7 +290,7 @@ class MetricsCollector(object):
             labels=['dag_id', 'owner', 'status']
         )
 
-        for dag in dag_info:
+        for dag in dag_status_info:
             labels = get_dag_labels(dag.dag_id)
 
             _add_gauge_metric(
