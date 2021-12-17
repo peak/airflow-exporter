@@ -38,7 +38,9 @@ def get_dag_info() -> List[DagInfo]:
     sql_res = (
         Session.query( # pylint: disable=no-member
             DagModel.dag_id, DagModel.is_paused, DagModel.owners,
-        ).all()
+        )
+        .join(SerializedDagModel, SerializedDagModel.dag_id == DagModel.dag_id)
+        .all()
     )
 
     res = [
