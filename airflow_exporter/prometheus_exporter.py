@@ -28,6 +28,7 @@ class DagInfo:
     dag_id: str
     is_paused: str
     owner: str
+    schedule_interval: str
 
 def get_dag_info() -> List[DagInfo]:
     '''get dag info
@@ -37,7 +38,10 @@ def get_dag_info() -> List[DagInfo]:
 
     sql_res = (
         Session.query( # pylint: disable=no-member
-            DagModel.dag_id, DagModel.is_paused, DagModel.owners,
+            DagModel.dag_id,
+            DagModel.is_paused,
+            DagModel.owners,
+            DagModel.schedule_interval,
         )
         .join(SerializedDagModel, SerializedDagModel.dag_id == DagModel.dag_id)
         .all()
@@ -45,9 +49,10 @@ def get_dag_info() -> List[DagInfo]:
 
     res = [
         DagInfo(
-            dag_id = i.dag_id,
-            is_paused = str(i.is_paused).lower(),
-            owner = i.owners
+            dag_id=i.dag_id,
+            is_paused=str(i.is_paused).lower(),
+            owner=i.owners,
+            schedule_interval=i.schedule_interval,
         )
         for i in sql_res
     ]
