@@ -28,7 +28,7 @@ class DagInfo:
     dag_id: str
     is_paused: str
     owner: str
-    schedule_interval: str
+    has_schedule: str
 
 def get_dag_info() -> List[DagInfo]:
     '''get dag info
@@ -52,7 +52,7 @@ def get_dag_info() -> List[DagInfo]:
             dag_id=i.dag_id,
             is_paused=str(i.is_paused).lower(),
             owner=i.owners,
-            schedule_interval=i.schedule_interval if i.schedule_interval is not None else '',
+            has_schedule=str(bool(i.schedule_interval)).lower(),
         )
         for i in sql_res
     ]
@@ -269,7 +269,7 @@ class MetricsCollector(object):
         dag_metric = GaugeMetricFamily(
             'airflow_dag',
             'Shows all dags',
-            labels=['dag_id', 'is_paused', 'owner', 'schedule_interval']
+            labels=['dag_id', 'is_paused', 'owner', 'has_schedule']
         )
 
         for dag in dag_info:
@@ -281,7 +281,7 @@ class MetricsCollector(object):
                     'dag_id': dag.dag_id,
                     'is_paused': dag.is_paused,
                     'owner': dag.owner,
-                    'schedule_interval': dag.schedule_interval,
+                    'has_schedule': dag.has_schedule,
                     **labels
                 },
                 1,
