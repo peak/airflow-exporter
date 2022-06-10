@@ -269,7 +269,7 @@ class MetricsCollector(object):
         dag_metric = GaugeMetricFamily(
             'airflow_dag',
             'Shows all dags',
-            labels=['dag_id', 'is_paused', 'owner']
+            labels=['dag_id', 'is_paused', 'owner', 'schedule_interval']
         )
 
         for dag in dag_info:
@@ -281,6 +281,7 @@ class MetricsCollector(object):
                     'dag_id': dag.dag_id,
                     'is_paused': dag.is_paused,
                     'owner': dag.owner,
+                    'schedule_interval': dag.schedule_interval,
                     **labels
                 },
                 1,
