@@ -52,7 +52,7 @@ def get_dag_info() -> List[DagInfo]:
             dag_id=i.dag_id,
             is_paused=str(i.is_paused).lower(),
             owner=i.owners,
-            schedule_interval=i.schedule_interval,
+            schedule_interval=i.schedule_interval if i.schedule_interval is not None else '',
         )
         for i in sql_res
     ]
