@@ -136,6 +136,37 @@ def get_last_dagrun_info() -> List[DagStatusInfo]:
 
 
 @dataclass
+class DagRunScheduleInfo:
+    dag_id: str
+    last_start_epoch: int
+
+
+def get_last_dagrun_start_times():
+    assert(Session is not None)
+
+    last_dag_run_start_dates_query = (
+        Session.query(
+            DagRun.dag_id,
+            func.max(DagRun.start_date).label('start_date')
+        )
+        .join(DagModel, DagModel.dag_id == DagRun.dag_id)
+        .join(SerializedDagModel, SerializedDagModel.dag_id == DagRun.dag_id)
+        .filter(DagRun.start_date is not None)
+        .group_by(DagRun.dag_id)
+    )
+
+    sql_res = last_dag_run_start_dates_query.all()
+    return [
+        DagRunScheduleInfo(
+            dag_id=row.dag_id,
+            last_start_epoch=row.start_date.timestamp()
+        )
+        for row in sql_res
+    ]
+
+
+
+@dataclass
 class TaskStatusInfo:
     dag_id: str
     task_id: str
@@ -339,6 +370,28 @@ class MetricsCollector(object):
                 )
 
         yield dag_last_status_metric
+
+        last_dag_run_start_times = get_last_dagrun_start_times()
+
+        dag_last_start_timestamp_metric = GaugeMetricFamily(
+            'airflow_dag_last_start_timestamp_seconds',
+            'Last start time of a dagrun as unix epoch seconds',
+            labels=['dag_id']
+        )
+
+        for dag in last_dag_run_start_times:
+            labels = get_dag_labels(dag.dag_id)
+
+            _add_gauge_metric(
+                dag_last_start_timestamp_metric,
+                {
+                    'dag_id': dag.dag_id,
+                    **labels
+                },
+                dag.last_start_epoch
+            )
+
+        yield dag_last_start_timestamp_metric
 
         # DagRun metrics
         dag_duration_metric = GaugeMetricFamily(
