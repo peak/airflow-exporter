@@ -29,6 +29,7 @@ class DagInfo:
     is_paused: str
     owner: str
     has_schedule: str
+    alert: str
 
 def get_dag_info() -> List[DagInfo]:
     '''get dag info
@@ -277,6 +278,18 @@ def get_dag_labels(dag_id: str) -> Dict[str, str]:
     return labels
 
 
+def get_dag_tags(dag_id: str) -> [str]:
+    dag = current_app.dag_bag.get_dag(dag_id)
+
+    if dag is None:
+        return []
+
+    if dag.tags is None:
+        return []
+
+    return dag.tags
+
+
 def _add_gauge_metric(metric, labels, value):
     metric.samples.append(Sample(
         metric.name, labels,
@@ -305,6 +318,9 @@ class MetricsCollector(object):
 
         for dag in dag_info:
             labels = get_dag_labels(dag.dag_id)
+            tags = get_dag_tags(dag.dag_id)
+
+            alerts = [tag.split(':')[1] for tag in tags if tag.startswith('alert:')]
 
             _add_gauge_metric(
                 dag_metric,
@@ -313,6 +329,7 @@ class MetricsCollector(object):
                     'is_paused': dag.is_paused,
                     'owner': dag.owner,
                     'has_schedule': dag.has_schedule,
+                    'alert': alerts[0] if alerts else '',
                     **labels
                 },
                 1,
