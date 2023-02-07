@@ -337,123 +337,123 @@ class MetricsCollector(object):
 
         yield dag_metric
 
-        # Dag Status Metrics and collect all labels
-        dag_status_info = get_dag_status_info()
+        # # Dag Status Metrics and collect all labels
+        # dag_status_info = get_dag_status_info()
 
-        dag_status_metric = GaugeMetricFamily(
-            'airflow_dag_status',
-            'Shows the number of dag starts with this status',
-            labels=['dag_id', 'owner', 'status']
-        )
+        # dag_status_metric = GaugeMetricFamily(
+        #     'airflow_dag_status',
+        #     'Shows the number of dag starts with this status',
+        #     labels=['dag_id', 'owner', 'status']
+        # )
 
-        for dag in dag_status_info:
-            labels = get_dag_labels(dag.dag_id)
+        # for dag in dag_status_info:
+        #     labels = get_dag_labels(dag.dag_id)
 
-            _add_gauge_metric(
-                dag_status_metric,
-                {
-                    'dag_id': dag.dag_id,
-                    'owner': dag.owner,
-                    'status': dag.status,
-                    **labels
-                },
-                dag.cnt, 
-            )
+        #     _add_gauge_metric(
+        #         dag_status_metric,
+        #         {
+        #             'dag_id': dag.dag_id,
+        #             'owner': dag.owner,
+        #             'status': dag.status,
+        #             **labels
+        #         },
+        #         dag.cnt, 
+        #     )
         
-        yield dag_status_metric
+        # yield dag_status_metric
 
-        # Last DagRun Metrics
-        last_dagrun_info = get_last_dagrun_info()
+        # # Last DagRun Metrics
+        # last_dagrun_info = get_last_dagrun_info()
 
-        dag_last_status_metric = GaugeMetricFamily(
-            'airflow_dag_last_status',
-            'Shows the status of last dagrun',
-            labels=['dag_id', 'owner', 'status']
-        )
+        # dag_last_status_metric = GaugeMetricFamily(
+        #     'airflow_dag_last_status',
+        #     'Shows the status of last dagrun',
+        #     labels=['dag_id', 'owner', 'status']
+        # )
 
-        for dag in last_dagrun_info:
-            labels = get_dag_labels(dag.dag_id)
+        # for dag in last_dagrun_info:
+        #     labels = get_dag_labels(dag.dag_id)
 
-            for status in State.dag_states:
-                _add_gauge_metric(
-                    dag_last_status_metric,
-                    {
-                        'dag_id': dag.dag_id,
-                        'owner': dag.owner,
-                        'status': status,
-                        **labels
-                    },
-                    int(dag.status == status)
-                )
+        #     for status in State.dag_states:
+        #         _add_gauge_metric(
+        #             dag_last_status_metric,
+        #             {
+        #                 'dag_id': dag.dag_id,
+        #                 'owner': dag.owner,
+        #                 'status': status,
+        #                 **labels
+        #             },
+        #             int(dag.status == status)
+        #         )
 
-        yield dag_last_status_metric
+        # yield dag_last_status_metric
 
-        last_dag_run_start_times = get_last_dagrun_start_times()
+        # last_dag_run_start_times = get_last_dagrun_start_times()
 
-        dag_last_start_timestamp_metric = GaugeMetricFamily(
-            'airflow_dag_last_start_timestamp_seconds',
-            'Last start time of a dagrun as unix epoch seconds',
-            labels=['dag_id']
-        )
+        # dag_last_start_timestamp_metric = GaugeMetricFamily(
+        #     'airflow_dag_last_start_timestamp_seconds',
+        #     'Last start time of a dagrun as unix epoch seconds',
+        #     labels=['dag_id']
+        # )
 
-        for dag in last_dag_run_start_times:
-            labels = get_dag_labels(dag.dag_id)
+        # for dag in last_dag_run_start_times:
+        #     labels = get_dag_labels(dag.dag_id)
 
-            _add_gauge_metric(
-                dag_last_start_timestamp_metric,
-                {
-                    'dag_id': dag.dag_id,
-                    **labels
-                },
-                dag.last_start_epoch
-            )
+        #     _add_gauge_metric(
+        #         dag_last_start_timestamp_metric,
+        #         {
+        #             'dag_id': dag.dag_id,
+        #             **labels
+        #         },
+        #         dag.last_start_epoch
+        #     )
 
-        yield dag_last_start_timestamp_metric
+        # yield dag_last_start_timestamp_metric
 
-        # DagRun metrics
-        dag_duration_metric = GaugeMetricFamily(
-            'airflow_dag_run_duration',
-            'Maximum duration of currently running dag_runs for each DAG in seconds',
-            labels=['dag_id']
-        )
-        for dag_duration in get_dag_duration_info():
-            labels = get_dag_labels(dag_duration.dag_id)
+        # # DagRun metrics
+        # dag_duration_metric = GaugeMetricFamily(
+        #     'airflow_dag_run_duration',
+        #     'Maximum duration of currently running dag_runs for each DAG in seconds',
+        #     labels=['dag_id']
+        # )
+        # for dag_duration in get_dag_duration_info():
+        #     labels = get_dag_labels(dag_duration.dag_id)
 
-            _add_gauge_metric(
-                dag_duration_metric,
-                {
-                    'dag_id': dag_duration.dag_id,
-                    **labels
-                },
-                dag_duration.duration
-            )
+        #     _add_gauge_metric(
+        #         dag_duration_metric,
+        #         {
+        #             'dag_id': dag_duration.dag_id,
+        #             **labels
+        #         },
+        #         dag_duration.duration
+        #     )
 
-        yield dag_duration_metric
+        # yield dag_duration_metric
 
-        # Task metrics
-        task_status_metric = GaugeMetricFamily(
-            'airflow_task_status',
-            'Shows the number of task starts with this status',
-            labels=['dag_id', 'task_id', 'owner', 'status']
-        )
+        # # Task metrics
+        # task_status_metric = GaugeMetricFamily(
+        #     'airflow_task_status',
+        #     'Shows the number of task starts with this status',
+        #     labels=['dag_id', 'task_id', 'owner', 'status']
+        # )
 
-        for dag_id, tasks in itertools.groupby(get_task_status_info(), lambda x: x.dag_id):
-            labels = get_dag_labels(dag_id)
+        # for dag_id, tasks in itertools.groupby(get_task_status_info(), lambda x: x.dag_id):
+        #     labels = get_dag_labels(dag_id)
 
-            for task in tasks:
-                _add_gauge_metric(
-                    task_status_metric,
-                    {
-                        'dag_id': task.dag_id,
-                        'task_id': task.task_id,
-                        'owner': task.owner,
-                        'status': task.status,
-                        **labels
-                    },
-                    task.cnt
-                )
+        #     for task in tasks:
+        #         _add_gauge_metric(
+        #             task_status_metric,
+        #             {
+        #                 'dag_id': task.dag_id,
+        #                 'task_id': task.task_id,
+        #                 'owner': task.owner,
+        #                 'status': task.status,
+        #                 **labels
+        #             },
+        #             task.cnt
+        #         )
 
-        yield task_status_metric
+        # yield task_status_metric
 
 
 REGISTRY.register(MetricsCollector())
