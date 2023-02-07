@@ -29,7 +29,7 @@ class DagInfo:
     is_paused: str
     owner: str
     has_schedule: str
-    alert: str
+    alert: str = ''
 
 def get_dag_info() -> List[DagInfo]:
     '''get dag info
