@@ -290,11 +290,18 @@ def get_dag_tags(dag_id: str) -> [str]:
     return dag.tags
 
 
-def get_alert_from_tags(dag_id: str) -> str:
-    tags = get_dag_tags(dag_id)
-    alerts = [tag.split(':')[1] for tag in tags if tag.startswith('alert:')]
+def get_metric_labels_from_tags(dag_id: str) -> Dict[str, str]:
+    label_names = ('alert', 'schedule')
 
-    return alerts[0] if alerts else ''
+    tags = get_dag_tags(dag_id)
+    labels = {}
+    for tag in tags:
+        for label_name in label_names:
+            if tag.startswith(label_name + ':'):
+                value = tag.split(':')[1]
+                labels[label_name] = value
+
+    return labels
 
 
 def _add_gauge_metric(metric, labels, value):
@@ -333,7 +340,7 @@ class MetricsCollector(object):
                     'is_paused': dag.is_paused,
                     'owner': dag.owner,
                     'has_schedule': dag.has_schedule,
-                    'alert': get_alert_from_tags(dag.dag_id),
+                    **get_metric_labels_from_tags,
                     **labels
                 },
                 1,
@@ -385,7 +392,7 @@ class MetricsCollector(object):
                         'dag_id': dag.dag_id,
                         'owner': dag.owner,
                         'status': status,
-                        'alert': get_alert_from_tags(dag.dag_id),
+                        **get_metric_labels_from_tags,
                         **labels
                     },
                     int(dag.status == status)
