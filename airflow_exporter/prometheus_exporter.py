@@ -340,7 +340,7 @@ class MetricsCollector(object):
                     'is_paused': dag.is_paused,
                     'owner': dag.owner,
                     'has_schedule': dag.has_schedule,
-                    **get_metric_labels_from_tags,
+                    **get_metric_labels_from_tags(dag.dag_id),
                     **labels
                 },
                 1,
@@ -392,7 +392,7 @@ class MetricsCollector(object):
                         'dag_id': dag.dag_id,
                         'owner': dag.owner,
                         'status': status,
-                        **get_metric_labels_from_tags,
+                        **get_metric_labels_from_tags(dag.dag_id),
                         **labels
                     },
                     int(dag.status == status)
