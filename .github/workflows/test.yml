@@ -19,8 +19,6 @@ jobs:
       matrix:
         airflow-version:
           - "2.0.2"
-          - "2.1.4"
-          - "2.2.1"
 
     env:
       AIRFLOW_HOME: /home/runner/work/airflow-exporter/airflow-exporter/tests/
