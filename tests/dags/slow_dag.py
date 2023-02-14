@@ -20,6 +20,7 @@ dag = DAG(
     schedule_interval=timedelta(hours=5),
     default_args=default_args,
     catchup=False,
+    tags=["tag1", "alert:peak", "schedule:weekly"],
     params={
         'labels': {
             'kind': 'slow'

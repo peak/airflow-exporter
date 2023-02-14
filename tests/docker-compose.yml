@@ -1,13 +1,16 @@
 version: "3"
 
 services:
-
-  postgres:
-    image: "postgres:9.6"
-    container_name: "postgres"
-    environment:
-      - POSTGRES_USER=airflow
-      - POSTGRES_PASSWORD=airflow
-      - POSTGRES_DB=airflow
+  mysql:
+    image: mysql:8.0
     ports:
-    - "5432:5432"
+      - 3306:3306
+    command: |
+            --explicit-defaults-for-timestamp=ON
+            --tls-version=''
+            --authentication-policy=mysql_native_password
+    environment:
+      MYSQL_USER: airflow
+      MYSQL_PASSWORD: airflow
+      MYSQL_DATABASE: airflow
+      MYSQL_ROOT_PASSWORD: root

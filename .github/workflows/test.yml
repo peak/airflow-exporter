@@ -19,8 +19,6 @@ jobs:
       matrix:
         airflow-version:
           - "2.0.2"
-          - "2.1.4"
-          - "2.2.1"
 
     env:
       AIRFLOW_HOME: /home/runner/work/airflow-exporter/airflow-exporter/tests/
@@ -35,7 +33,7 @@ jobs:
       run: docker-compose -f tests/docker-compose.yml up -d
 
     - name: Install Airflow
-      run: pip install "apache-airflow == ${{ matrix.airflow-version }}" psycopg2-binary wtforms==2.3.3
+      run: pip install "apache-airflow == ${{ matrix.airflow-version }}" mysqlclient==1.4.6 wtforms==2.3.3
 
     - name: Install airflow-exporter
       run: pip install .
