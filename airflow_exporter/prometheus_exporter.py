@@ -1,6 +1,6 @@
 import itertools
 from typing import List, Generator, Dict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from sqlalchemy import func
 from sqlalchemy import text
@@ -10,7 +10,7 @@ from flask_appbuilder import BaseView as FABBaseView, expose as FABexpose
 
 from airflow.plugins_manager import AirflowPlugin
 from airflow.settings import Session
-from airflow.models import TaskInstance, DagModel, DagRun, DagTag
+from airflow.models import TaskInstance, DagModel, DagRun
 from airflow.models.serialized_dag import SerializedDagModel
 from airflow.utils.state import State
 
@@ -26,7 +26,6 @@ class DagInfo:
     is_paused: str
     owner: str
     has_schedule: str
-    tags: List[str] = field(default_factory=list)
 
 
 def list_dag_info() -> List[DagInfo]:
@@ -38,27 +37,19 @@ def list_dag_info() -> List[DagInfo]:
             DagModel.is_paused,
             DagModel.owners,
             DagModel.schedule_interval,
-            func.group_concat(DagTag.name, ",").label('tags'),
         )
         .join(SerializedDagModel, SerializedDagModel.dag_id == DagModel.dag_id)
-        .join(DagTag, DagTag.dag_id == DagModel.dag_id, isouter=True)
         .group_by(DagModel.dag_id)
         .all()
     )
 
     result = []
     for row in rows:
-        tags = []
-        if row.tags:
-            # convert "tag1,,,tag2" to ["tag1", "tag2"]
-            tags = [tag for tag in row.tags.split(",") if tag]
-
         daginfo = DagInfo(
             dag_id=row.dag_id,
             is_paused=str(row.is_paused).lower(),
             owner=row.owners,
             has_schedule=str(bool(row.schedule_interval)).lower(),
-            tags=tags,
         )
         result.append(daginfo)
 
@@ -283,15 +274,23 @@ def get_dag_labels(dag_id: str) -> Dict[str, str]:
     return labels
 
 
-def get_metric_labels_from_tags(tags: List[str]) -> Dict[str, str]:
-    label_names = ('alert', 'schedule')
+def get_metric_labels_from_tags(dag_id: str) -> Dict[str, str]:
+    known_tags = ('alert', 'schedule')
+
+    # reuse airflow webserver dagbag
+    dag = current_app.dag_bag.get_dag(dag_id)
+
+    if dag is None:
+        return {}
+
+    all_tags = dag.tags or {}
 
     labels = {}
-    for tag in tags:
-        for label_name in label_names:
-            if tag.startswith(label_name + ':'):
+    for tag in all_tags:
+        for known_tag in known_tags:
+            if tag.startswith(known_tag + ':'):
                 value = tag.split(':')[1]
-                labels[label_name] = value
+                labels[known_tag] = value
 
     return labels
 
@@ -332,7 +331,7 @@ class MetricsCollector(object):
                     'is_paused': dag_info.is_paused,
                     'owner': dag_info.owner,
                     'has_schedule': dag_info.has_schedule,
-                    **get_metric_labels_from_tags(dag_info.tags),
+                    **get_metric_labels_from_tags(dag_info.dag_id),
                     **labels
                 },
                 1,
