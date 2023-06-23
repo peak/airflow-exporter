@@ -11,14 +11,14 @@ on:
 jobs:
 
   test:
- 
+
     runs-on: ubuntu-latest
- 
+
     strategy:
       fail-fast: false
       matrix:
         airflow-version:
-          - "2.0.2"
+          - "2.6.1"
 
     env:
       AIRFLOW_HOME: /home/runner/work/airflow-exporter/airflow-exporter/tests/
