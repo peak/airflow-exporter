@@ -149,7 +149,7 @@ def get_last_dagrun_start_times():
         )
         .join(DagModel, DagModel.dag_id == DagRun.dag_id)
         .join(SerializedDagModel, SerializedDagModel.dag_id == DagRun.dag_id)
-        .filter(DagRun.start_date is not None)
+        .filter(DagRun.start_date.is_not(None))
         .group_by(DagRun.dag_id)
     )
 
