@@ -35,6 +35,9 @@ jobs:
     - name: Install Airflow
       run: pip install "apache-airflow == ${{ matrix.airflow-version }}" mysqlclient==1.4.6 wtforms==2.3.3
 
+    - name: Install unpinned Airflow dependencies
+      run: pip install 'pydantic < 2.0.0' 'pendulum < 3.0.0'
+
     - name: Install airflow-exporter
       run: pip install .
 

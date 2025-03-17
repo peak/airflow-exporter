@@ -31,9 +31,6 @@ setup(
     install_requires=[
         "apache-airflow>=2.6.1",
         "prometheus_client>=0.4.2",
-        # NOTE: Airflowflow does not seem to pin pendulum version, so we do it here.
-        # With 3.0.0 pendulum.tz.timezone is no longer available.
-        "pendulum<3.0.0",
     ],
     entry_points={
         "airflow.plugins": [
