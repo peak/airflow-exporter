@@ -15,7 +15,7 @@ from airflow.models.serialized_dag import SerializedDagModel
 from airflow.utils.state import State
 
 # Importing base classes that we need to derive
-from prometheus_client import generate_latest, REGISTRY
+from prometheus_client import generate_latest, REGISTRY, CONTENT_TYPE_LATEST
 from prometheus_client.core import GaugeMetricFamily, Metric
 from prometheus_client.samples import Sample
 
@@ -467,7 +467,7 @@ class RBACMetrics(FABBaseView):
 
     @FABexpose('/')
     def list(self):
-        return Response(generate_latest(), mimetype='text')
+        return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
 # Metrics View for Flask app builder used in airflow with rbac enabled
