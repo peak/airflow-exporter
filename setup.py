@@ -32,9 +32,13 @@ setup(
         "apache-airflow>=2.6.1",
         "prometheus_client>=0.4.2",
     ],
+    extras_require={
+        "airflow-2.6": [
+            "pydantic<2.0.0",
+            "pendulum<3.0.0",
+        ],
+    },
     entry_points={
-        "airflow.plugins": [
-            "AirflowPrometheus = airflow_exporter.prometheus_exporter:AirflowPrometheusPlugins"
-        ]
+        "airflow.plugins": ["AirflowPrometheus = airflow_exporter.prometheus_exporter:AirflowPrometheusPlugins"]
     },
 )
