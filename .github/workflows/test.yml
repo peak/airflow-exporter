@@ -35,9 +35,19 @@ jobs:
     - name: Install Airflow
       run: pip install "apache-airflow == ${{ matrix.airflow-version }}" mysqlclient==1.4.6 wtforms==2.3.3
 
+    - name: Debug
+      run: |
+          pip --version
+          pip freeze
+
     - name: Install airflow-exporter for 2.6.1
       if: matrix.airflow-version == '2.6.1'
       run: pip install '.[airflow-2.6]'
+
+    - name: Debug
+      run: |
+          pip --version
+          pip freeze
 
     - name: Install airflow-exporter
       if: matrix.airflow-version != '2.6.1'
