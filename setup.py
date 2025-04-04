@@ -41,7 +41,7 @@ setup(
             "apache-airflow==2.6.1",
             "pydantic<2.0.0",
             "pendulum<3.0.0",
-            "Flask-Session<0.7.0",
+            "Flask-Session<0.6.0",
         ],
     },
     entry_points={
