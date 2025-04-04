@@ -32,6 +32,11 @@ jobs:
     - name: Setup database
       run: docker compose -f tests/docker-compose.yml up -d
 
+    - name: pipdeptree
+      run: |
+        pip install pipdeptree
+        pipdeptree
+
     - name: Install Airflow
       run: pip install "apache-airflow == ${{ matrix.airflow-version }}" mysqlclient==1.4.6 wtforms==2.3.3
 
@@ -39,6 +44,7 @@ jobs:
       run: |
           pip --version
           pip freeze
+          pipdeptree
 
     - name: Install airflow-exporter for 2.6.1
       if: matrix.airflow-version == '2.6.1'
@@ -48,6 +54,7 @@ jobs:
       run: |
           pip --version
           pip freeze
+          pipdeptree
 
     - name: Install airflow-exporter
       if: matrix.airflow-version != '2.6.1'
