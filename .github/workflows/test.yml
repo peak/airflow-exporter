@@ -48,7 +48,7 @@ jobs:
 
     - name: Install airflow-exporter for 2.6.1
       if: matrix.airflow-version == '2.6.1'
-      run: pip install '.[airflow-2.6]'
+      run: pip install '.[airflow-2.6.1]'
 
     - name: Debug
       run: |

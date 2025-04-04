@@ -33,7 +33,11 @@ setup(
         "prometheus_client>=0.4.2",
     ],
     extras_require={
-        "airflow-2.6": [
+        # NOTE: airflow==2.6.1 has no upper bound on several dependencies. A
+        # new installation brings newer versions which contain breaking
+        # changes, requiring us to explicitly pin these dependencies to
+        # compatible versions.
+        "airflow-2.6.1": [
             "apache-airflow==2.6.1",
             "pydantic<2.0.0",
             "pendulum<3.0.0",
