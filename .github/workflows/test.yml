@@ -68,6 +68,8 @@ jobs:
       run: |
         airflow dags list
 
+        airflow dags reserialize
+
         airflow dags unpause dummy_dag
         airflow dags unpause slow_dag
 
