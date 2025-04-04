@@ -34,6 +34,7 @@ setup(
     ],
     extras_require={
         "airflow-2.6": [
+            "apache-airflow==2.6.1",
             "pydantic<2.0.0",
             "pendulum<3.0.0",
         ],
