@@ -42,6 +42,7 @@ setup(
             "pydantic<2.0.0",
             "pendulum<3.0.0",
             "Flask-Session<0.6.0",
+            "connexion<3.0",
         ],
     },
     entry_points={
