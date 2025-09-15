@@ -275,7 +275,7 @@ def get_dag_labels(dag_id: str) -> Dict[str, str]:
 
 
 def get_metric_labels_from_tags(dag_id: str) -> Dict[str, str]:
-    known_tags = ('alert', 'schedule')
+    known_tags = ('alert', 'schedule', 'postcalc', 'product', 'environment')
 
     # reuse airflow webserver dagbag
     dag = current_app.dag_bag.get_dag(dag_id)
