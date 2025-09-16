@@ -420,9 +420,7 @@ class MetricsCollector(object):
             labels=['dag_id']
         )
         for dag_duration in get_dag_duration_info():
-            labels = get_dag_labels(dag_duration.dag_id).update(
-                get_metric_labels_from_tags(dag_duration.dag_id)
-            )
+            labels = get_dag_labels(dag_duration.dag_id)
 
             _add_gauge_metric(
                 dag_duration_metric,
