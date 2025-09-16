@@ -417,10 +417,13 @@ class MetricsCollector(object):
         dag_duration_metric = GaugeMetricFamily(
             'airflow_dag_run_duration',
             'Maximum duration of currently running dag_runs for each DAG in seconds',
-            labels=['dag_id']
+            labels=['dag_id', 'postcalc', 'env', 'product']
         )
         for dag_duration in get_dag_duration_info():
-            labels = get_dag_labels(dag_duration.dag_id)
+            labels = {
+                **get_dag_labels(dag_duration.dag_id)
+                **get_metric_labels_from_tags(dag_duration.dag_id)
+            }
 
             _add_gauge_metric(
                 dag_duration_metric,
