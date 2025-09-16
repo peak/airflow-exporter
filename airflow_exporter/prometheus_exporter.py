@@ -421,7 +421,7 @@ class MetricsCollector(object):
         )
         for dag_duration in get_dag_duration_info():
             labels = {
-                **get_dag_labels(dag_duration.dag_id)
+                **get_dag_labels(dag_duration.dag_id),
                 **get_metric_labels_from_tags(dag_duration.dag_id)
             }
 
